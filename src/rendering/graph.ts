@@ -12,7 +12,18 @@ export function createGraphRenderer(canvas: HTMLCanvasElement) {
       ctx.clearRect(0, 0, w, h);
 
       const window = history.slice(-WINDOW_SIZE);
-      if (window.length < 2) return;
+      if (window.length < 2) {
+        ctx.fillStyle = 'rgba(10,10,18,0.8)';
+        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#555';
+        ctx.font = '13px system-ui';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Click \'Start\' to begin the simulation', w / 2, h / 2);
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+        return;
+      }
 
       // Compute Y scale for actors
       let maxActors = 1;
