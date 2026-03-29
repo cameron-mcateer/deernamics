@@ -7,6 +7,7 @@ import { createGraphRenderer } from './rendering/graph';
 import { createControls, createConfigPanel } from './ui/controls';
 import { createPlacementToolbar, setupCanvasPlacement, type PlacementState } from './ui/placement';
 import { serializeMap, deserializeMap } from './serialization';
+import { createInfoPanel } from './ui/info-panel';
 
 // State
 let config: SimConfig = createConfig();
@@ -106,6 +107,9 @@ setupCanvasPlacement(
   () => running,
   () => { saveStaticState(); renderFrame(); },
 );
+
+// Info panel
+createInfoPanel(document.getElementById('info-panel')!);
 
 // Render
 let extinctionMessage: string | null = null;

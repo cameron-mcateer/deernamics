@@ -11,6 +11,7 @@ body {
   display: flex;
   justify-content: center;
   padding: 20px;
+  min-height: 100vh;
 }
 
 #app {
@@ -18,6 +19,8 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  width: 100%;
+  max-width: 1120px;
 }
 
 h1 {
@@ -30,11 +33,22 @@ canvas {
   background: #0a0a12;
 }
 
+#sim-canvas {
+  width: 100%;
+  height: auto;
+}
+
+#graph-canvas {
+  width: 100%;
+  height: auto;
+}
+
 #toolbar, #controls {
   display: flex;
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 button {
@@ -71,8 +85,25 @@ label {
   color: #aaa;
 }
 
+/* Layout */
+#main-area {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+#canvas-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Config panel */
 #config-panel {
-  width: 800px;
+  width: 100%;
   font-size: 0.8rem;
 }
 
@@ -104,17 +135,19 @@ label {
   gap: 8px;
 }
 
-#config-panel .config-field label[data-tooltip] {
+[data-tooltip] {
   cursor: help;
   border-bottom: 1px dotted #666;
-  position: relative;
 }
 
-#config-panel .config-field label[data-tooltip]::after {
-  content: attr(data-tooltip);
+.info-field-ref[data-tooltip] {
+  border-bottom-color: #4a6a8a;
+}
+
+/* Body-level tooltip element */
+.tooltip {
+  display: none;
   position: absolute;
-  bottom: 100%;
-  left: 0;
   background: #222;
   color: #ddd;
   padding: 4px 8px;
@@ -122,17 +155,98 @@ label {
   font-size: 0.75rem;
   width: 200px;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  z-index: 10;
-}
-
-#config-panel .config-field label[data-tooltip]:hover::after {
-  opacity: 1;
-  transition-delay: 0.3s;
+  z-index: 1000;
 }
 
 #config-panel .config-field input {
   width: 60px;
   text-align: right;
 }
+
+/* Info panel */
+#info-panel {
+  width: 280px;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.info-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.info-tabs button {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 0.8rem;
+}
+
+.info-tabs button.active {
+  background: #3a3a5a;
+}
+
+.info-content {
+  background: #1e1e36;
+  border: 1px solid #333;
+  border-radius: 3px;
+  padding: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.info-overview {
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.info-behavior {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #2a2a44;
+}
+
+.info-behavior:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.info-behavior h4 {
+  font-size: 0.85rem;
+  color: #ddd;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-priority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #3a3a5a;
+  color: #aaa;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+.info-behavior p {
+  color: #999;
+  margin-bottom: 6px;
+}
+
+.info-fields {
+  color: #6a8aaa;
+  font-size: 0.75rem;
+}
+
+.info-fields-label {
+  color: #556;
+  font-weight: bold;
+}
+

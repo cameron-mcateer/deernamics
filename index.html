@@ -11,9 +11,14 @@
     <h1>Deernamics</h1>
     <div id="toolbar"></div>
     <div id="controls"></div>
-    <canvas id="sim-canvas" width="800" height="800"></canvas>
-    <canvas id="graph-canvas" width="800" height="120"></canvas>
-    <div id="config-panel"></div>
+    <div id="main-area">
+      <div id="canvas-col">
+        <canvas id="sim-canvas" width="800" height="800"></canvas>
+        <canvas id="graph-canvas" width="800" height="120"></canvas>
+        <div id="config-panel"></div>
+      </div>
+      <div id="info-panel"></div>
+    </div>
   </div>
   <script type="module" src="/src/main.ts"></script>
 </body>
