@@ -50,7 +50,6 @@ export function createPlacementToolbar(
     btn.style.borderBottom = `3px solid ${typeColors[t]}`;
     btn.addEventListener('click', () => {
       state.type = t;
-      state.count = t === 'grass' ? 2 : 5;
       typeButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       updateOptions();
@@ -69,13 +68,14 @@ export function createPlacementToolbar(
   const counts = [1, 2, 5, 10];
   const radiusSizes = [15, 30, 60, 120];
 
+  const usesCount = () => state.mode === 'place' && state.type !== 'grass';
+
   function updateOptions() {
     optionsContainer.innerHTML = '';
 
-    if (state.mode === 'place') {
-      const label = state.type === 'grass' ? 'Brush: ' : 'Count: ';
+    if (usesCount()) {
       const lbl = document.createElement('label');
-      lbl.textContent = label;
+      lbl.textContent = 'Count: ';
       optionsContainer.appendChild(lbl);
 
       for (const c of counts) {
@@ -91,7 +91,7 @@ export function createPlacementToolbar(
       }
     } else {
       const lbl = document.createElement('label');
-      lbl.textContent = 'Radius: ';
+      lbl.textContent = 'Size: ';
       optionsContainer.appendChild(lbl);
 
       for (const r of radiusSizes) {
@@ -151,8 +151,10 @@ export function setupCanvasPlacement(
   function handleAction(e: MouseEvent) {
     if (isRunning()) return;
     const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX;
+    const my = (e.clientY - rect.top) * scaleY;
     const placement = getPlacement();
     const world = getWorld();
     const config = getConfig();
@@ -165,7 +167,7 @@ export function setupCanvasPlacement(
     }
 
     if (placement.type === 'grass') {
-      paintGrass(world, config, mx, my, placement.count);
+      paintGrass(world, config, mx, my, placement.brushRadius);
     } else if (placement.type === 'deer') {
       placeDeer(world, config, prng, mx, my, placement.count);
     } else {
@@ -241,19 +243,25 @@ function removeByType(
   }
 }
 
-function paintGrass(world: WorldState, config: SimConfig, mx: number, my: number, brushRadius: number) {
+function paintGrass(world: WorldState, config: SimConfig, mx: number, my: number, radiusPx: number) {
   const cellSize = config.map.cellSize;
   const cols = config.map.width / cellSize;
   const rows = config.map.height / cellSize;
   const centerCol = Math.floor(mx / cellSize);
   const centerRow = Math.floor(my / cellSize);
+  const cellRadius = Math.ceil(radiusPx / cellSize);
+  const r2 = radiusPx * radiusPx;
 
-  for (let dc = -brushRadius; dc <= brushRadius; dc++) {
-    for (let dr = -brushRadius; dr <= brushRadius; dr++) {
-      if (dc * dc + dr * dr > brushRadius * brushRadius) continue;
+  for (let dc = -cellRadius; dc <= cellRadius; dc++) {
+    for (let dr = -cellRadius; dr <= cellRadius; dr++) {
       const c = centerCol + dc;
       const r = centerRow + dr;
-      if (c >= 0 && c < cols && r >= 0 && r < rows) {
+      if (c < 0 || c >= cols || r < 0 || r >= rows) continue;
+      const px = (c + 0.5) * cellSize;
+      const py = (r + 0.5) * cellSize;
+      const dx = px - mx;
+      const dy = py - my;
+      if (dx * dx + dy * dy <= r2) {
         world.grass[c][r].level = world.grass[c][r].maxLevel;
       }
     }
@@ -263,8 +271,8 @@ function paintGrass(world: WorldState, config: SimConfig, mx: number, my: number
 function placeDeer(world: WorldState, config: SimConfig, prng: PRNG, mx: number, my: number, count: number) {
   for (let i = 0; i < count; i++) {
     if (world.deer.length >= config.deer.maxCount) break;
-    const ox = (prng() - 0.5) * 40;
-    const oy = (prng() - 0.5) * 40;
+    const ox = count === 1 ? 0 : (prng() - 0.5) * 40;
+    const oy = count === 1 ? 0 : (prng() - 0.5) * 40;
     const deer: Deer = {
       id: world.nextId++,
       kind: 'deer',
@@ -282,8 +290,8 @@ function placeDeer(world: WorldState, config: SimConfig, prng: PRNG, mx: number,
 function placeWolves(world: WorldState, config: SimConfig, prng: PRNG, mx: number, my: number, count: number) {
   for (let i = 0; i < count; i++) {
     if (world.wolves.length >= config.wolf.maxCount) break;
-    const ox = (prng() - 0.5) * 40;
-    const oy = (prng() - 0.5) * 40;
+    const ox = count === 1 ? 0 : (prng() - 0.5) * 40;
+    const oy = count === 1 ? 0 : (prng() - 0.5) * 40;
     const wolf: Wolf = {
       id: world.nextId++,
       kind: 'wolf',
