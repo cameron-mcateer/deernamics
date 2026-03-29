@@ -103,13 +103,44 @@ export function createInfoPanel(container: HTMLElement) {
   const tabButtons: HTMLButtonElement[] = [];
   const panels: HTMLDivElement[] = [];
 
+  // Guide tab
+  const guideBtn = document.createElement('button');
+  guideBtn.textContent = 'Guide';
+  guideBtn.addEventListener('click', () => activate(0));
+  tabButtons.push(guideBtn);
+  tabs.appendChild(guideBtn);
+
+  const guidePanel = document.createElement('div');
+  guidePanel.className = 'info-actor-panel';
+  guidePanel.innerHTML = `
+    <p class="info-overview">Welcome to Deernamics! Set up your ecosystem and watch it evolve.</p>
+    <div class="info-behavior">
+      <h4><span class="info-priority">1</span> Place your actors</h4>
+      <p>Use the toolbar to select <b>Deer</b>, <b>Wolf</b>, or <b>Grass</b>, then click the canvas to place them. Adjust the count or brush size to place more at once. Use <b>Remove</b> mode to erase actors or clear grass.</p>
+    </div>
+    <div class="info-behavior">
+      <h4><span class="info-priority">2</span> Tune the parameters</h4>
+      <p>Expand the <b>Configuration</b> panel below the canvas to adjust behavior values like speed, energy drain, reproduction thresholds, and grass growth rate. Changes take effect immediately.</p>
+    </div>
+    <div class="info-behavior">
+      <h4><span class="info-priority">3</span> Run the simulation</h4>
+      <p>Click <b>Start</b> to begin. Use the speed buttons to run faster. Click <b>Stop</b> to pause, or <b>Reset</b> to restore the map to your placed layout. The population graph tracks deer, wolf, and grass levels over time.</p>
+    </div>
+    <div class="info-behavior" style="border-bottom:none">
+      <h4><span class="info-priority">4</span> Save &amp; share</h4>
+      <p>Click <b>Export</b> to download your map setup as a JSON file. Share it with others who can <b>Import</b> it to load your exact scenario — actor positions, grass layout, and all config values.</p>
+    </div>
+  `;
+  panels.push(guidePanel);
+  content.appendChild(guidePanel);
+
   for (let i = 0; i < ACTORS.length; i++) {
     const actor = ACTORS[i];
 
     const btn = document.createElement('button');
     btn.textContent = actor.label;
     btn.style.borderBottom = `3px solid ${actor.color}`;
-    btn.addEventListener('click', () => activate(i));
+    btn.addEventListener('click', () => activate(i + 1));
     tabButtons.push(btn);
     tabs.appendChild(btn);
 
