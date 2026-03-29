@@ -20,6 +20,7 @@ export interface SimConfig {
     stopGrazeLevel: number;
     grazeRate: number;
     grazeEnergyGain: number;
+    grazePreserveThreshold: number;
     fearRadius: number;
     viewRadius: number;
     flockThreshold: number;
@@ -72,6 +73,7 @@ export const DEFAULTS: SimConfig = {
     stopGrazeLevel: 90,
     grazeRate: 5,
     grazeEnergyGain: 12,
+    grazePreserveThreshold: 5,  // won't consume cells at or below this % if other grass nearby
     fearRadius: 120,
     viewRadius: 150,
     flockThreshold: 3000,
