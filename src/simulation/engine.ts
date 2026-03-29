@@ -450,4 +450,9 @@ export function tick(world: WorldState, config: SimConfig, prng: PRNG): void {
     wolves: world.wolves.length,
     grassCoverage: grassCoverage / (cols * rows),
   });
+
+  // Cap history to prevent unbounded memory growth
+  if (world.populationHistory.length > 1500) {
+    world.populationHistory.splice(0, world.populationHistory.length - 1000);
+  }
 }
