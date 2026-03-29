@@ -7,6 +7,8 @@ export type ControlCallbacks = {
   onSpeedChange: (speed: number) => void;
   getSeed: () => number;
   setSeed: (seed: number) => void;
+  onExport: () => void;
+  onImport: (json: string) => void;
 };
 
 export function createControls(container: HTMLElement, callbacks: ControlCallbacks) {
@@ -51,19 +53,48 @@ export function createControls(container: HTMLElement, callbacks: ControlCallbac
     speedBtns.push(btn);
   }
 
-  container.append(seedLabel, startBtn, stopBtn, resetBtn, speedLabel, ...speedBtns);
+  const exportBtn = document.createElement('button');
+  exportBtn.textContent = 'Export';
+  exportBtn.addEventListener('click', callbacks.onExport);
+
+  const importBtn = document.createElement('button');
+  importBtn.textContent = 'Import';
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = '.json';
+  fileInput.style.display = 'none';
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+    file.text().then(json => {
+      callbacks.onImport(json);
+      fileInput.value = '';
+    });
+  });
+  importBtn.addEventListener('click', () => fileInput.click());
+
+  container.append(
+    seedLabel, startBtn, stopBtn, resetBtn,
+    speedLabel, ...speedBtns,
+    exportBtn, importBtn, fileInput,
+  );
 
   return {
     setRunning(isRunning: boolean) {
       seedInput.disabled = isRunning;
       for (const btn of speedBtns) btn.disabled = isRunning;
+      exportBtn.disabled = isRunning;
+      importBtn.disabled = isRunning;
+    },
+    updateSeedDisplay(seed: number) {
+      seedInput.value = String(seed);
     },
   };
 }
 
 export function createConfigPanel(
   container: HTMLElement,
-  config: SimConfig,
+  getConfig: () => SimConfig,
   onConfigChange: (path: string, value: number) => void,
 ) {
   const wrapper = document.createElement('details');
@@ -72,24 +103,32 @@ export function createConfigPanel(
   wrapper.appendChild(summary);
 
   const allInputs: HTMLInputElement[] = [];
+  type InputEntry = { input: HTMLInputElement; prefix: string; key: string };
+  const inputMap: InputEntry[] = [];
 
-  type Section = { label: string; prefix: string; obj: Record<string, number> };
-  const sections: Section[] = [
-    { label: 'Grass', prefix: 'grass', obj: config.grass as unknown as Record<string, number> },
-    { label: 'Deer', prefix: 'deer', obj: config.deer as unknown as Record<string, number> },
-    { label: 'Wolf', prefix: 'wolf', obj: config.wolf as unknown as Record<string, number> },
-  ];
+  const sectionDefs = [
+    { label: 'Grass', prefix: 'grass' },
+    { label: 'Deer', prefix: 'deer' },
+    { label: 'Wolf', prefix: 'wolf' },
+  ] as const;
 
-  for (const section of sections) {
+  function getSection(prefix: string): Record<string, number> {
+    const cfg = getConfig();
+    return cfg[prefix as keyof typeof cfg] as unknown as Record<string, number>;
+  }
+
+  const config = getConfig();
+  for (const sectionDef of sectionDefs) {
     const details = document.createElement('details');
     const sum = document.createElement('summary');
-    sum.textContent = section.label;
+    sum.textContent = sectionDef.label;
     details.appendChild(sum);
 
     const grid = document.createElement('div');
     grid.className = 'config-section';
 
-    for (const [key, val] of Object.entries(section.obj)) {
+    const initialObj = config[sectionDef.prefix as keyof typeof config] as unknown as Record<string, number>;
+    for (const [key, val] of Object.entries(initialObj)) {
       if (typeof val !== 'number') continue;
 
       const field = document.createElement('div');
@@ -102,17 +141,19 @@ export function createConfigPanel(
       input.type = 'number';
       input.value = String(val);
       input.step = val < 1 ? '0.01' : val < 10 ? '0.5' : '1';
+      const prefix = sectionDef.prefix;
       const applyValue = () => {
         const v = parseFloat(input.value);
         if (!isNaN(v)) {
-          (section.obj as Record<string, number>)[key] = v;
-          onConfigChange(`${section.prefix}.${key}`, v);
+          getSection(prefix)[key] = v;
+          onConfigChange(`${prefix}.${key}`, v);
         }
       };
       input.addEventListener('change', applyValue);
       input.addEventListener('input', applyValue);
 
       allInputs.push(input);
+      inputMap.push({ input, prefix, key });
       field.append(label, input);
       grid.appendChild(field);
     }
@@ -126,6 +167,11 @@ export function createConfigPanel(
   return {
     setDisabled(disabled: boolean) {
       for (const input of allInputs) input.disabled = disabled;
+    },
+    refreshValues() {
+      for (const { input, prefix, key } of inputMap) {
+        input.value = String(getSection(prefix)[key]);
+      }
     },
   };
 }

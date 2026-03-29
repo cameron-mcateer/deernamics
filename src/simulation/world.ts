@@ -42,14 +42,14 @@ export function createWorld(config: SimConfig, prng: PRNG): WorldState {
   const cols = config.map.width / config.map.cellSize;
   const rows = config.map.height / config.map.cellSize;
 
-  // Initialize grass grid
+  // Initialize grass grid — cells start at 50% maxLevel for export round-trip consistency
   const grass: GrassCell[][] = [];
   for (let col = 0; col < cols; col++) {
     grass[col] = [];
     for (let row = 0; row < rows; row++) {
       const hasGrass = prng() < 0.3;
       grass[col][row] = {
-        level: hasGrass ? 20 + prng() * (config.grass.maxLevel - 20) : 0,
+        level: hasGrass ? config.grass.maxLevel * 0.5 : 0,
         maxLevel: config.grass.maxLevel,
       };
     }
@@ -112,7 +112,7 @@ export function resetWorld(
     for (let row = 0; row < rows; row++) {
       const hasGrass = prng() < 0.3;
       grass[col][row] = {
-        level: hasGrass ? 20 + prng() * (config.grass.maxLevel - 20) : 0,
+        level: hasGrass ? config.grass.maxLevel * 0.5 : 0,
         maxLevel: config.grass.maxLevel,
       };
     }

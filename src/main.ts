@@ -6,11 +6,12 @@ import { createRenderer } from './rendering/renderer';
 import { createGraphRenderer } from './rendering/graph';
 import { createControls, createConfigPanel } from './ui/controls';
 import { createPlacementToolbar, setupCanvasPlacement, type PlacementState } from './ui/placement';
+import { serializeMap, deserializeMap } from './serialization';
 
 // State
 let config: SimConfig = createConfig();
-let simPrng: PRNG = createPRNG(config.seed);        // simulation-only PRNG, reset on Start
-let placementPrng: PRNG = createPRNG(config.seed + 1); // separate PRNG for placement
+let simPrng: PRNG = createPRNG(config.seed);
+let placementPrng: PRNG = createPRNG(config.seed + 1);
 let world: WorldState = createWorld(config, simPrng);
 let running = false;
 let speedMultiplier = 1;
@@ -35,11 +36,21 @@ function setRunning(value: boolean) {
   configPanel.setDisabled(value);
 }
 
+function loadMap(newConfig: SimConfig, newWorld: WorldState) {
+  config = newConfig;
+  world = newWorld;
+  staticState = structuredClone(world);
+  renderer = createRenderer(simCanvas, config);
+  controls.updateSeedDisplay(config.seed);
+  configPanel.refreshValues();
+  extinctionMessage = null;
+  renderFrame();
+}
+
 // Controls
 const controlsContainer = document.getElementById('controls')!;
 const controls = createControls(controlsContainer, {
   onStart: () => {
-    // Always reset the simulation PRNG from seed on Start for deterministic replay
     simPrng = createPRNG(config.seed);
     setRunning(true);
   },
@@ -54,11 +65,31 @@ const controls = createControls(controlsContainer, {
   onSpeedChange: (s) => { speedMultiplier = s; },
   getSeed: () => config.seed,
   setSeed: (s) => { config.seed = s; },
+  onExport: () => {
+    const json = serializeMap(config, staticState);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `deernamics-${new Date().toISOString()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
+  onImport: (json: string) => {
+    try {
+      const { config: newConfig, world: newWorld } = deserializeMap(json);
+      setRunning(false);
+      loadMap(newConfig, newWorld);
+    } catch (e) {
+      console.error('Import failed:', e);
+      alert('Failed to import map config. Check the file format.');
+    }
+  },
 });
 
 // Config panel — edits config directly, changes are live
 const configContainer = document.getElementById('config-panel')!;
-const configPanel = createConfigPanel(configContainer, config, () => {});
+const configPanel = createConfigPanel(configContainer, () => config, () => {});
 
 // Placement — uses separate PRNG, updates static state after every action
 const toolbarContainer = document.getElementById('toolbar')!;
