@@ -40,5 +40,16 @@ export function createRenderer(canvas: HTMLCanvasElement, config: SimConfig) {
         ctx.fill();
       }
     },
+
+    renderMessage(text: string) {
+      const { width, height } = config.map;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.fillRect(0, height / 2 - 40, width, 80);
+      ctx.fillStyle = '#e0e0e0';
+      ctx.font = 'bold 24px system-ui';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, width / 2, height / 2);
+    },
   };
 }

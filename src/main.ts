@@ -41,6 +41,7 @@ const controls = createControls(controlsContainer, {
   onStop: () => { setRunning(false); },
   onReset: () => {
     setRunning(false);
+    extinctionMessage = null;
     prng = createPRNG(config.seed);
     world = structuredClone(staticState);
     renderer = createRenderer(simCanvas, config);
@@ -74,10 +75,15 @@ setupCanvasPlacement(
 // Render
 function renderFrame() {
   renderer.render(world);
+  if (extinctionMessage) {
+    renderer.renderMessage(extinctionMessage);
+  }
   graphRenderer.render(world.populationHistory);
 }
 
 // Main loop
+let extinctionMessage: string | null = null;
+
 function loop() {
   if (running) {
     try {
@@ -88,6 +94,15 @@ function loop() {
       console.error('Tick error:', e);
       setRunning(false);
     }
+
+    // Check for extinction
+    if (world.deer.length === 0 && world.wolves.length === 0) {
+      extinctionMessage = 'All animals have died out';
+      setRunning(false);
+    } else {
+      extinctionMessage = null;
+    }
+
     renderFrame();
   }
   requestAnimationFrame(loop);
