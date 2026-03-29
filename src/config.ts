@@ -52,6 +52,10 @@ export interface SimConfig {
     reproductionCooldownTicks: number;
     grassSlowThreshold: number;
     grassSlowFactor: number;
+    fertilizeRadius: number;
+    fertilizeThreshold: number;
+    fertilizeSpreadChance: number;
+    fertilizeBoost: number;
   };
 }
 
@@ -64,7 +68,7 @@ export const DEFAULTS: SimConfig = {
   },
   grass: {
     maxLevel: 100,
-    growthRatePerTick: 0.01,
+    growthRatePerTick: 0.02,
   },
   deer: {
     maxCount: 500,
@@ -94,10 +98,10 @@ export const DEFAULTS: SimConfig = {
     maxCount: 500,
     initialCount: 10,
     speed: 2.2,
-    passiveDrainPerTick: 0.07,
+    passiveDrainPerTick: 0.05,
     movementDrainMultiplier: 0.025,
     huntDrainMultiplier: 1.6,
-    startHuntLevel: 55,
+    startHuntLevel: 30,
     stopHuntLevel: 90,
     catchRadius: 12,
     huntEnergyGain: 40,
@@ -108,7 +112,11 @@ export const DEFAULTS: SimConfig = {
     reproduceRadius: 15,
     reproductionCooldownTicks: 70,
     grassSlowThreshold: 80,
-    grassSlowFactor: 0.8,
+    grassSlowFactor: 0.7,
+    fertilizeRadius: 10,
+    fertilizeThreshold: 1,
+    fertilizeSpreadChance: 0.005,
+    fertilizeBoost: 0.1,
   },
 };
 

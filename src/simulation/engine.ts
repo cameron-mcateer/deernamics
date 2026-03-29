@@ -170,6 +170,59 @@ export function tick(world: WorldState, config: SimConfig, prng: PRNG): void {
     }
   }
 
+  // Step 1c: Wolf fertilization — spread and boost grass near wolves
+  const fertR = config.wolf.fertilizeRadius;
+  const fertThreshold = config.wolf.fertilizeThreshold;
+  const fertSpreadChance = config.wolf.fertilizeSpreadChance;
+  const fertBoost = config.wolf.fertilizeBoost;
+
+  if (world.wolves.length > 0 && fertThreshold > 0) {
+    const cellSize = config.map.cellSize;
+    const kernelR = Math.ceil(fertR / cellSize);
+    const wolfDensity: number[][] = [];
+    for (let c = 0; c < cols; c++) {
+      wolfDensity[c] = new Array(rows).fill(0);
+    }
+
+    for (const wolf of world.wolves) {
+      const wc = Math.floor(wolf.x / cellSize);
+      const wr = Math.floor(wolf.y / cellSize);
+      const r2 = fertR * fertR;
+      for (let kc = -kernelR; kc <= kernelR; kc++) {
+        for (let kr = -kernelR; kr <= kernelR; kr++) {
+          const nc = wc + kc;
+          const nr = wr + kr;
+          if (nc < 0 || nc >= cols || nr < 0 || nr >= rows) continue;
+          const px = (nc + 0.5) * cellSize;
+          const py = (nr + 0.5) * cellSize;
+          const dx = px - wolf.x;
+          const dy = py - wolf.y;
+          if (dx * dx + dy * dy <= r2) {
+            wolfDensity[nc][nr]++;
+          }
+        }
+      }
+    }
+
+    for (let col = 0; col < cols; col++) {
+      for (let row = 0; row < rows; row++) {
+        const count = wolfDensity[col][row];
+        if (count < fertThreshold) continue;
+        const cell = world.grass[col][row];
+
+        if (cell.level > 0) {
+          // Boost existing grass growth
+          cell.level = Math.min(cell.maxLevel, cell.level + fertBoost * count);
+        } else {
+          // Chance to spread grass to empty cells
+          if (prng() < fertSpreadChance * count) {
+            cell.level = cell.maxLevel * 0.1;
+          }
+        }
+      }
+    }
+  }
+
   // Step 2: Resolve modes
   for (const deer of world.deer) {
     deer.mode = resolveDeerMode(deer, world.wolves, config);

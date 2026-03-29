@@ -95,6 +95,12 @@ const ACTORS: ActorInfo[] = [
         description: 'When too many deer crowd an area, they suppress grass growth and eventually destroy it. At moderate density, growth slows proportionally. At high density, grass is actively damaged each tick and can be killed entirely, creating dead zones that never regrow. This prevents unchecked deer population explosions.',
         configFields: ['deer.trampleRadius', 'deer.trampleSuppressThreshold', 'deer.trampleDamageThreshold', 'deer.trampleDamageRate'],
       },
+      {
+        name: 'Fertilization',
+        priority: 4,
+        description: 'Wolf droppings encourage grass growth. When wolves are nearby, existing grass grows faster proportional to wolf density. Empty cells near wolves have a small chance each tick of being seeded with new grass. This creates a positive feedback loop: wolves suppress deer, which protects grass, and their presence actively restores it.',
+        configFields: ['wolf.fertilizeRadius', 'wolf.fertilizeThreshold', 'wolf.fertilizeSpreadChance', 'wolf.fertilizeBoost'],
+      },
     ],
   },
 ];

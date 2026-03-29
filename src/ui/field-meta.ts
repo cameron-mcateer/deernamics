@@ -48,6 +48,10 @@ export const FIELD_META: Record<string, Record<string, FieldMeta>> = {
     reproductionCooldownTicks: { label: 'Reproduce Cooldown', tooltip: 'Ticks after reproduction before the wolf can reproduce again' },
     grassSlowThreshold: { label: 'Grass Slow Threshold', tooltip: 'Grass level above which wolves begin to slow down' },
     grassSlowFactor: { label: 'Grass Slow Factor', tooltip: 'Speed multiplier at maximum grass level (lower = slower)' },
+    fertilizeRadius: { label: 'Fertilize Radius', tooltip: 'Distance (px) over which wolf density is measured for grass fertilization' },
+    fertilizeThreshold: { label: 'Fertilize At', tooltip: 'Wolf count within radius needed to trigger fertilization effects' },
+    fertilizeSpreadChance: { label: 'Spread Chance', tooltip: 'Per-tick probability of seeding grass on an empty cell per wolf above threshold' },
+    fertilizeBoost: { label: 'Growth Boost', tooltip: 'Extra grass level added per tick per wolf on cells that already have grass' },
   },
 };
 
