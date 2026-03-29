@@ -1,0 +1,110 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font-family: system-ui, -apple-system, sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+h1 {
+  font-size: 1.5rem;
+  color: #ccc;
+}
+
+canvas {
+  border: 1px solid #333;
+  background: #0a0a12;
+}
+
+#toolbar, #controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+button {
+  background: #2a2a4a;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  padding: 4px 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 0.85rem;
+}
+
+button:hover {
+  background: #3a3a5a;
+}
+
+button.active {
+  background: #4a4a7a;
+  border-color: #7a7aaa;
+}
+
+input[type="text"], input[type="number"] {
+  background: #2a2a4a;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  width: 70px;
+}
+
+label {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+#config-panel {
+  width: 800px;
+  font-size: 0.8rem;
+}
+
+#config-panel details {
+  background: #1e1e36;
+  border: 1px solid #333;
+  border-radius: 3px;
+  margin-top: 6px;
+}
+
+#config-panel summary {
+  cursor: pointer;
+  padding: 6px 10px;
+  font-weight: bold;
+  color: #bbb;
+}
+
+#config-panel .config-section {
+  padding: 8px 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 4px 16px;
+}
+
+#config-panel .config-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+#config-panel .config-field input {
+  width: 60px;
+  text-align: right;
+}
