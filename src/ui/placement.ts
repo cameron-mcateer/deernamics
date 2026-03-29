@@ -262,7 +262,7 @@ function paintGrass(world: WorldState, config: SimConfig, mx: number, my: number
       const dx = px - mx;
       const dy = py - my;
       if (dx * dx + dy * dy <= r2) {
-        world.grass[c][r].level = world.grass[c][r].maxLevel;
+        world.grass[c][r].level = world.grass[c][r].maxLevel * 0.5;
       }
     }
   }
