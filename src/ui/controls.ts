@@ -68,7 +68,7 @@ export function createConfigPanel(
 ) {
   const wrapper = document.createElement('details');
   const summary = document.createElement('summary');
-  summary.textContent = 'Configuration (changes apply on Reset)';
+  summary.textContent = 'Configuration';
   wrapper.appendChild(summary);
 
   const allInputs: HTMLInputElement[] = [];

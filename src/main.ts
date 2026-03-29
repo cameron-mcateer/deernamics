@@ -9,7 +9,6 @@ import { createPlacementToolbar, setupCanvasPlacement, type PlacementState } fro
 
 // State
 let config: SimConfig = createConfig();
-let pendingConfig: SimConfig = createConfig();
 let prng: PRNG = createPRNG(config.seed);
 let world: WorldState = createWorld(config, prng);
 let running = false;
@@ -42,20 +41,19 @@ const controls = createControls(controlsContainer, {
   onStop: () => { setRunning(false); },
   onReset: () => {
     setRunning(false);
-    config = structuredClone(pendingConfig);
     prng = createPRNG(config.seed);
     world = structuredClone(staticState);
     renderer = createRenderer(simCanvas, config);
     renderFrame();
   },
   onSpeedChange: (s) => { speedMultiplier = s; },
-  getSeed: () => pendingConfig.seed,
-  setSeed: (s) => { pendingConfig.seed = s; },
+  getSeed: () => config.seed,
+  setSeed: (s) => { config.seed = s; },
 });
 
-// Config panel
+// Config panel — edits config directly, changes are live
 const configContainer = document.getElementById('config-panel')!;
-const configPanel = createConfigPanel(configContainer, pendingConfig, () => {});
+const configPanel = createConfigPanel(configContainer, config, () => {});
 
 // Placement — updates static state after every action
 const toolbarContainer = document.getElementById('toolbar')!;
