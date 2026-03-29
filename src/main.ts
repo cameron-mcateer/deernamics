@@ -9,8 +9,9 @@ import { createPlacementToolbar, setupCanvasPlacement, type PlacementState } fro
 
 // State
 let config: SimConfig = createConfig();
-let prng: PRNG = createPRNG(config.seed);
-let world: WorldState = createWorld(config, prng);
+let simPrng: PRNG = createPRNG(config.seed);        // simulation-only PRNG, reset on Start
+let placementPrng: PRNG = createPRNG(config.seed + 1); // separate PRNG for placement
+let world: WorldState = createWorld(config, simPrng);
 let running = false;
 let speedMultiplier = 1;
 
@@ -37,12 +38,15 @@ function setRunning(value: boolean) {
 // Controls
 const controlsContainer = document.getElementById('controls')!;
 const controls = createControls(controlsContainer, {
-  onStart: () => { setRunning(true); },
+  onStart: () => {
+    // Always reset the simulation PRNG from seed on Start for deterministic replay
+    simPrng = createPRNG(config.seed);
+    setRunning(true);
+  },
   onStop: () => { setRunning(false); },
   onReset: () => {
     setRunning(false);
     extinctionMessage = null;
-    prng = createPRNG(config.seed);
     world = structuredClone(staticState);
     renderer = createRenderer(simCanvas, config);
     renderFrame();
@@ -56,7 +60,7 @@ const controls = createControls(controlsContainer, {
 const configContainer = document.getElementById('config-panel')!;
 const configPanel = createConfigPanel(configContainer, config, () => {});
 
-// Placement — updates static state after every action
+// Placement — uses separate PRNG, updates static state after every action
 const toolbarContainer = document.getElementById('toolbar')!;
 let placementState: PlacementState = createPlacementToolbar(toolbarContainer, (state) => {
   placementState = state;
@@ -67,12 +71,14 @@ setupCanvasPlacement(
   () => placementState,
   () => world,
   () => config,
-  () => prng,
+  () => placementPrng,
   () => running,
   () => { saveStaticState(); renderFrame(); },
 );
 
 // Render
+let extinctionMessage: string | null = null;
+
 function renderFrame() {
   renderer.render(world);
   if (extinctionMessage) {
@@ -82,13 +88,11 @@ function renderFrame() {
 }
 
 // Main loop
-let extinctionMessage: string | null = null;
-
 function loop() {
   if (running) {
     try {
       for (let i = 0; i < speedMultiplier; i++) {
-        tick(world, config, prng);
+        tick(world, config, simPrng);
       }
     } catch (e) {
       console.error('Tick error:', e);
