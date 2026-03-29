@@ -83,8 +83,8 @@ export const DEFAULTS: SimConfig = {
   wolf: {
     maxCount: 500,
     initialCount: 10,
-    speed: 2.5,
-    passiveDrainPerTick: 0.05,
+    speed: 2.2,
+    passiveDrainPerTick: 0.07,
     movementDrainMultiplier: 0.025,
     huntDrainMultiplier: 1.6,
     startHuntLevel: 55,
