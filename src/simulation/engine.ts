@@ -25,10 +25,19 @@ function dist2(a: { x: number; y: number }, b: { x: number; y: number }): number
   return dx * dx + dy * dy;
 }
 
+function normalizeAngle(a: number): number {
+  a = a % (Math.PI * 2);
+  if (a > Math.PI) a -= Math.PI * 2;
+  if (a < -Math.PI) a += Math.PI * 2;
+  return a;
+}
+
 function resolveHeading(current: number, desired: number, prng: PRNG): number {
   const momentum = 0.85;
   const noise = (prng() - 0.5) * 0.3;
-  return current * momentum + desired * (1 - momentum) + noise;
+  // Blend using the shortest angular difference
+  let diff = normalizeAngle(desired - current);
+  return normalizeAngle(current + diff * (1 - momentum) + noise);
 }
 
 function effectiveSpeed(actor: Actor, grassLevel: number, config: SimConfig): number {
@@ -195,8 +204,19 @@ export function tick(world: WorldState, config: SimConfig, prng: PRNG): void {
     const speed = effectiveSpeed(actor, grassLevel, config);
 
     actor.heading = resolveHeading(actor.heading, br.desiredHeading, prng);
-    actor.x = clamp(actor.x + Math.cos(actor.heading) * speed, 0, mapW);
-    actor.y = clamp(actor.y + Math.sin(actor.heading) * speed, 0, mapH);
+    const nx = actor.x + Math.cos(actor.heading) * speed;
+    const ny = actor.y + Math.sin(actor.heading) * speed;
+
+    // Reflect heading off boundaries
+    if (nx <= 0 || nx >= mapW) {
+      actor.heading = normalizeAngle(Math.PI - actor.heading);
+    }
+    if (ny <= 0 || ny >= mapH) {
+      actor.heading = normalizeAngle(-actor.heading);
+    }
+
+    actor.x = clamp(nx, 0, mapW);
+    actor.y = clamp(ny, 0, mapH);
 
     const acfg = actor.kind === 'deer' ? config.deer : config.wolf;
     const movementDrain = speed * acfg.movementDrainMultiplier * br.drainMultiplier;

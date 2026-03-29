@@ -189,7 +189,7 @@ export const DEFAULTS = {
     reproduceDrain: 35,
     reproduceRadius: 15,
     reproductionCooldownTicks: 80,
-    grassSlowThreshold: 60,      // grass level above which wolf begins to slow
+    grassSlowThreshold: 80,      // grass level above which wolf begins to slow
     grassSlowFactor: 0.5,        // speed multiplier at max grass level (linear interp)
   },
 };
