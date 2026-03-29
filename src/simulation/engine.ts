@@ -111,6 +111,65 @@ export function tick(world: WorldState, config: SimConfig, prng: PRNG): void {
     }
   }
 
+  // Step 1b: Apply deer trampling
+  const trampleR = config.deer.trampleRadius;
+  const suppressAt = config.deer.trampleSuppressThreshold;
+  const damageAt = config.deer.trampleDamageThreshold;
+  const damageRate = config.deer.trampleDamageRate;
+
+  if (world.deer.length > 0 && suppressAt > 0) {
+    // Build deer density grid: count deer per cell using kernel spread
+    const cellSize = config.map.cellSize;
+    const kernelR = Math.ceil(trampleR / cellSize);
+    const density: number[][] = [];
+    for (let c = 0; c < cols; c++) {
+      density[c] = new Array(rows).fill(0);
+    }
+
+    for (const deer of world.deer) {
+      const dc = Math.floor(deer.x / cellSize);
+      const dr = Math.floor(deer.y / cellSize);
+      const r2 = trampleR * trampleR;
+      for (let kc = -kernelR; kc <= kernelR; kc++) {
+        for (let kr = -kernelR; kr <= kernelR; kr++) {
+          const nc = dc + kc;
+          const nr = dr + kr;
+          if (nc < 0 || nc >= cols || nr < 0 || nr >= rows) continue;
+          const px = (nc + 0.5) * cellSize;
+          const py = (nr + 0.5) * cellSize;
+          const dx = px - deer.x;
+          const dy = py - deer.y;
+          if (dx * dx + dy * dy <= r2) {
+            density[nc][nr]++;
+          }
+        }
+      }
+    }
+
+    // Apply suppression and damage per cell
+    for (let col = 0; col < cols; col++) {
+      for (let row = 0; row < rows; row++) {
+        const cell = world.grass[col][row];
+        if (cell.level <= 0) continue;
+        const count = density[col][row];
+        if (count < suppressAt) continue;
+
+        if (count < damageAt) {
+          // Suppression: partially undo the growth applied in step 1
+          const factor = clamp(1 - (count - suppressAt) / (damageAt - suppressAt), 0, 1);
+          const growth = config.grass.growthRatePerTick;
+          cell.level = Math.max(0, cell.level - growth * (1 - factor));
+        } else {
+          // Full suppression: undo all growth
+          cell.level = Math.max(0, cell.level - config.grass.growthRatePerTick);
+          // Active damage
+          const excess = count - damageAt;
+          cell.level = Math.max(0, cell.level - excess * damageRate);
+        }
+      }
+    }
+  }
+
   // Step 2: Resolve modes
   for (const deer of world.deer) {
     deer.mode = resolveDeerMode(deer, world.wolves, config);

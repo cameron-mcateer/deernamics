@@ -24,6 +24,10 @@ export const FIELD_META: Record<string, Record<string, FieldMeta>> = {
     reproduceDrain: { label: 'Reproduce Cost', tooltip: 'Energy drained from each parent on reproduction' },
     reproduceRadius: { label: 'Reproduce Radius', tooltip: 'Distance (px) partners must be within to reproduce' },
     reproductionCooldownTicks: { label: 'Reproduce Cooldown', tooltip: 'Ticks after reproduction before the deer can reproduce again' },
+    trampleRadius: { label: 'Trample Radius', tooltip: 'Distance (px) over which deer density is measured for trampling' },
+    trampleSuppressThreshold: { label: 'Trample Suppress At', tooltip: 'Deer count within radius at which grass growth begins to slow' },
+    trampleDamageThreshold: { label: 'Trample Damage At', tooltip: 'Deer count within radius at which grass is actively destroyed' },
+    trampleDamageRate: { label: 'Trample Damage Rate', tooltip: 'Grass level lost per tick per deer above the damage threshold' },
   },
   wolf: {
     maxCount: { label: 'Max Population', tooltip: 'Hard cap on total wolves. Reproduction blocked at this limit' },

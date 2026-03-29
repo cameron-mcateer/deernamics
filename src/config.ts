@@ -28,6 +28,10 @@ export interface SimConfig {
     reproduceDrain: number;
     reproduceRadius: number;
     reproductionCooldownTicks: number;
+    trampleRadius: number;
+    trampleSuppressThreshold: number;
+    trampleDamageThreshold: number;
+    trampleDamageRate: number;
   };
   wolf: {
     maxCount: number;
@@ -81,6 +85,10 @@ export const DEFAULTS: SimConfig = {
     reproduceDrain: 30,
     reproduceRadius: 15,
     reproductionCooldownTicks: 50,
+    trampleRadius: 20,
+    trampleSuppressThreshold: 3,
+    trampleDamageThreshold: 10,
+    trampleDamageRate: 0.3,
   },
   wolf: {
     maxCount: 500,

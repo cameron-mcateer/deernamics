@@ -89,6 +89,12 @@ const ACTORS: ActorInfo[] = [
         description: 'When a deer grazes on a cell, the cell loses grass equal to the deer\'s graze rate (floored at zero). If the cell drops to zero, it stops growing entirely. Deer avoid consuming nearly-empty cells if better options exist nearby.',
         configFields: ['deer.grazeRate', 'deer.grazePreserveThreshold'],
       },
+      {
+        name: 'Trampling',
+        priority: 3,
+        description: 'When too many deer crowd an area, they suppress grass growth and eventually destroy it. At moderate density, growth slows proportionally. At high density, grass is actively damaged each tick and can be killed entirely, creating dead zones that never regrow. This prevents unchecked deer population explosions.',
+        configFields: ['deer.trampleRadius', 'deer.trampleSuppressThreshold', 'deer.trampleDamageThreshold', 'deer.trampleDamageRate'],
+      },
     ],
   },
 ];
