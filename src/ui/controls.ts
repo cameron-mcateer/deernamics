@@ -13,6 +13,16 @@ export type ControlCallbacks = {
   onImport: (json: string) => void;
 };
 
+function group(...els: (HTMLElement | HTMLElement[])[]): HTMLSpanElement {
+  const span = document.createElement('span');
+  span.className = 'control-group';
+  for (const el of els) {
+    if (Array.isArray(el)) span.append(...el);
+    else span.appendChild(el);
+  }
+  return span;
+}
+
 export function createControls(container: HTMLElement, callbacks: ControlCallbacks) {
   const seedLabel = document.createElement('label');
   seedLabel.textContent = 'Seed: ';
@@ -25,6 +35,16 @@ export function createControls(container: HTMLElement, callbacks: ControlCallbac
     if (!isNaN(val)) callbacks.setSeed(val);
   });
   seedLabel.appendChild(seedInput);
+
+  const randomSeedBtn = document.createElement('button');
+  randomSeedBtn.textContent = '🎲';
+  randomSeedBtn.title = 'Randomize seed';
+  randomSeedBtn.style.padding = '4px 6px';
+  randomSeedBtn.addEventListener('click', () => {
+    const newSeed = Math.floor(Math.random() * 1_000_000);
+    seedInput.value = String(newSeed);
+    callbacks.setSeed(newSeed);
+  });
 
   const startBtn = document.createElement('button');
   startBtn.textContent = 'Start';
@@ -76,14 +96,16 @@ export function createControls(container: HTMLElement, callbacks: ControlCallbac
   importBtn.addEventListener('click', () => fileInput.click());
 
   container.append(
-    seedLabel, startBtn, stopBtn, resetBtn,
-    speedLabel, ...speedBtns,
-    exportBtn, importBtn, fileInput,
+    group(seedLabel, randomSeedBtn),
+    group(startBtn, stopBtn, resetBtn),
+    group(speedLabel, ...speedBtns),
+    group(exportBtn, importBtn, fileInput),
   );
 
   return {
     setRunning(isRunning: boolean) {
       seedInput.disabled = isRunning;
+      randomSeedBtn.disabled = isRunning;
       for (const btn of speedBtns) btn.disabled = isRunning;
       exportBtn.disabled = isRunning;
       importBtn.disabled = isRunning;

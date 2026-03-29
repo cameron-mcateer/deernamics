@@ -34,12 +34,18 @@ export function createPlacementToolbar(
     modeButtons.push(btn);
   }
 
-  // Type selector (always visible)
+  // Type selector (always visible) with colored borders
+  const typeColors: Record<PlacementType, string> = {
+    wolf: '#CC2200',
+    deer: '#8B6914',
+    grass: '#22B422',
+  };
   const typeButtons: HTMLButtonElement[] = [];
   const types: PlacementType[] = ['wolf', 'deer', 'grass'];
   for (const t of types) {
     const btn = document.createElement('button');
     btn.textContent = t.charAt(0).toUpperCase() + t.slice(1);
+    btn.style.borderBottom = `3px solid ${typeColors[t]}`;
     btn.addEventListener('click', () => {
       state.type = t;
       state.count = t === 'grass' ? 2 : 5;
@@ -100,9 +106,18 @@ export function createPlacementToolbar(
     }
   }
 
-  const modeLabel = document.createElement('label');
-  modeLabel.textContent = 'Tool: ';
-  container.append(modeLabel, ...modeButtons, ...typeButtons, optionsContainer);
+  function grp(...els: HTMLElement[]): HTMLSpanElement {
+    const span = document.createElement('span');
+    span.className = 'control-group';
+    span.append(...els);
+    return span;
+  }
+
+  container.append(
+    grp(...modeButtons),
+    grp(...typeButtons),
+    grp(optionsContainer),
+  );
   updateOptions();
 
   return state;
