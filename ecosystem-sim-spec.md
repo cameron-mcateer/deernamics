@@ -153,7 +153,7 @@ export const DEFAULTS = {
   },
 
   deer: {
-    maxCount: 500,
+    maxCount: 3000,
     initialCount: 40,
     speed: 1.5,                  // px per tick base speed
     passiveDrainPerTick: 0.05,   // energy lost per tick regardless of activity

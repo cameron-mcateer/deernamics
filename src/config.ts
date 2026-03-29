@@ -71,7 +71,7 @@ export const DEFAULTS: SimConfig = {
     growthRatePerTick: 0.02,
   },
   deer: {
-    maxCount: 500,
+    maxCount: 3000,
     initialCount: 40,
     speed: 1.6,
     passiveDrainPerTick: 0.02,
@@ -97,7 +97,7 @@ export const DEFAULTS: SimConfig = {
   wolf: {
     maxCount: 500,
     initialCount: 10,
-    speed: 2.2,
+    speed: 2.3,
     passiveDrainPerTick: 0.05,
     movementDrainMultiplier: 0.025,
     huntDrainMultiplier: 1.6,
@@ -112,11 +112,11 @@ export const DEFAULTS: SimConfig = {
     reproduceRadius: 15,
     reproductionCooldownTicks: 70,
     grassSlowThreshold: 80,
-    grassSlowFactor: 0.7,
-    fertilizeRadius: 10,
+    grassSlowFactor: 0.75,
+    fertilizeRadius: 20,
     fertilizeThreshold: 1,
-    fertilizeSpreadChance: 0.005,
-    fertilizeBoost: 0.1,
+    fertilizeSpreadChance: 0.08,
+    fertilizeBoost: 0.05,
   },
 };
 

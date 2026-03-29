@@ -7,12 +7,15 @@ export function createGraphRenderer(canvas: HTMLCanvasElement) {
   const w = canvas.width;
   const h = canvas.height;
 
+  let allTimeMax = 1;
+
   return {
     render(history: PopulationSnapshot[]) {
       ctx.clearRect(0, 0, w, h);
 
       const window = history.slice(-WINDOW_SIZE);
       if (window.length < 2) {
+        allTimeMax = 1;
         ctx.fillStyle = 'rgba(10,10,18,0.8)';
         ctx.fillRect(0, 0, w, h);
         ctx.fillStyle = '#555';
@@ -25,13 +28,11 @@ export function createGraphRenderer(canvas: HTMLCanvasElement) {
         return;
       }
 
-      // Compute Y scale for actors
-      let maxActors = 1;
-      for (const snap of window) {
-        maxActors = Math.max(maxActors, snap.deer, snap.wolves);
-      }
+      // Track all-time max from the latest snapshot
+      const latest = history[history.length - 1];
+      allTimeMax = Math.max(allTimeMax, latest.deer, latest.wolves);
       // Round up to nearest 10 for cleaner axis
-      maxActors = Math.ceil(maxActors / 10) * 10;
+      const maxActors = Math.ceil(allTimeMax / 10) * 10;
 
       const xStep = w / (WINDOW_SIZE - 1);
 
