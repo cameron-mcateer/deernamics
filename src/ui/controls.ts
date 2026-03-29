@@ -38,7 +38,8 @@ export function createControls(container: HTMLElement, callbacks: ControlCallbac
 
   const randomSeedBtn = document.createElement('button');
   randomSeedBtn.textContent = '🎲';
-  randomSeedBtn.title = 'Randomize seed';
+  randomSeedBtn.setAttribute('data-tooltip', 'Randomize seed');
+  bindTooltip(randomSeedBtn);
   randomSeedBtn.style.padding = '4px 6px';
   randomSeedBtn.addEventListener('click', () => {
     const newSeed = Math.floor(Math.random() * 1_000_000);

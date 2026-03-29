@@ -1,6 +1,7 @@
 import type { WorldState, Deer, Wolf } from '../simulation/world';
 import type { SimConfig } from '../config';
 import type { PRNG } from '../simulation/prng';
+import { bindTooltip } from './tooltip';
 
 export type PlacementType = 'wolf' | 'deer' | 'grass';
 export type ToolMode = 'place' | 'remove';
@@ -15,6 +16,7 @@ export type PlacementState = {
 export function createPlacementToolbar(
   container: HTMLElement,
   onStateChange: (state: PlacementState) => void,
+  onRandomize: () => void,
 ): PlacementState {
   const state: PlacementState = { mode: 'place', type: 'deer', count: 5, brushRadius: 30 };
 
@@ -113,10 +115,18 @@ export function createPlacementToolbar(
     return span;
   }
 
+  const randomizeBtn = document.createElement('button');
+  randomizeBtn.textContent = '🎲';
+  randomizeBtn.setAttribute('data-tooltip', 'Randomize actors');
+  bindTooltip(randomizeBtn);
+  randomizeBtn.style.padding = '4px 6px';
+  randomizeBtn.addEventListener('click', onRandomize);
+
   container.append(
     grp(...modeButtons),
     grp(...typeButtons),
     grp(optionsContainer),
+    grp(randomizeBtn),
   );
   updateOptions();
 

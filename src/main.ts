@@ -94,9 +94,18 @@ const configPanel = createConfigPanel(configContainer, () => config, () => {});
 
 // Placement — uses separate PRNG, updates static state after every action
 const toolbarContainer = document.getElementById('toolbar')!;
-let placementState: PlacementState = createPlacementToolbar(toolbarContainer, (state) => {
-  placementState = state;
-});
+let placementState: PlacementState = createPlacementToolbar(
+  toolbarContainer,
+  (state) => { placementState = state; },
+  () => {
+    if (running) return;
+    // Recreate world from scratch using a random seed for placement
+    const tempPrng = createPRNG(Math.floor(Math.random() * 1_000_000));
+    world = createWorld(config, tempPrng);
+    saveStaticState();
+    renderFrame();
+  },
+);
 
 setupCanvasPlacement(
   simCanvas,
