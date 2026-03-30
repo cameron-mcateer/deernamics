@@ -62,7 +62,7 @@ export function createControls(container: HTMLElement, callbacks: ControlCallbac
   const speedLabel = document.createElement('label');
   speedLabel.textContent = 'Speed: ';
 
-  const speeds = [1, 2, 4];
+  const speeds = [0.5, 1, 2];
   const speedBtns: HTMLButtonElement[] = [];
   for (const s of speeds) {
     const btn = document.createElement('button');

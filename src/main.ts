@@ -132,11 +132,15 @@ function renderFrame() {
 }
 
 // Main loop
+let tickAccumulator = 0;
+
 function loop() {
   if (running) {
+    tickAccumulator += speedMultiplier;
     try {
-      for (let i = 0; i < speedMultiplier; i++) {
+      while (tickAccumulator >= 1) {
         tick(world, config, simPrng);
+        tickAccumulator--;
       }
     } catch (e) {
       console.error('Tick error:', e);
