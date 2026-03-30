@@ -122,10 +122,11 @@ export function createConfigPanel(
   getConfig: () => SimConfig,
   onConfigChange: (path: string, value: number) => void,
 ) {
-  const wrapper = document.createElement('details');
-  const summary = document.createElement('summary');
-  summary.textContent = 'Configuration';
-  wrapper.appendChild(summary);
+  const wrapper = document.createElement('div');
+  const header = document.createElement('div');
+  header.textContent = 'Configuration';
+  header.className = 'config-header';
+  wrapper.appendChild(header);
 
   const allInputs: HTMLInputElement[] = [];
   type InputEntry = { input: HTMLInputElement; prefix: string; key: string };

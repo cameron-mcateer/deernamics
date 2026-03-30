@@ -4,28 +4,35 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+}
+
 body {
   background: #1a1a2e;
   color: #e0e0e0;
   font-family: system-ui, -apple-system, sans-serif;
   display: flex;
   justify-content: center;
-  padding: 20px;
-  min-height: 100vh;
+  padding: 12px;
+  overflow: hidden;
 }
 
 #app {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   width: 100%;
-  max-width: 1120px;
+  max-width: 1340px;
+  height: 100%;
+  overflow: hidden;
 }
 
 h1 {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: #ccc;
+  flex-shrink: 0;
 }
 
 canvas {
@@ -34,13 +41,18 @@ canvas {
 }
 
 #sim-canvas {
-  width: 100%;
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: calc(100vh - 230px);
+  aspect-ratio: 1;
+  align-self: center;
 }
 
 #graph-canvas {
   width: 100%;
   height: auto;
+  flex-shrink: 0;
 }
 
 #control-bar {
@@ -48,8 +60,9 @@ canvas {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 #toolbar, #controls {
@@ -80,10 +93,10 @@ button {
   background: #2a2a4a;
   color: #e0e0e0;
   border: 1px solid #444;
-  padding: 4px 12px;
+  padding: 3px 10px;
   cursor: pointer;
   border-radius: 3px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 button:hover {
@@ -99,65 +112,80 @@ input[type="text"], input[type="number"] {
   background: #2a2a4a;
   color: #e0e0e0;
   border: 1px solid #444;
-  padding: 4px 8px;
+  padding: 3px 6px;
   border-radius: 3px;
-  font-size: 0.85rem;
-  width: 70px;
+  font-size: 0.8rem;
+  width: 60px;
 }
 
 label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #aaa;
 }
 
 /* Layout */
 #main-area {
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  gap: 12px;
+  align-items: stretch;
   width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 #canvas-col {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 4px;
   flex: 1;
   min-width: 0;
+  min-height: 0;
 }
 
-/* Config panel */
+/* Config panel — left sidebar */
 #config-panel {
-  width: 100%;
-  font-size: 0.8rem;
+  width: 220px;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 #config-panel details {
   background: #1e1e36;
   border: 1px solid #333;
   border-radius: 3px;
-  margin-top: 6px;
+  margin-top: 4px;
+}
+
+.config-header {
+  padding: 4px 8px;
+  font-weight: bold;
+  color: #bbb;
+  font-size: 0.75rem;
 }
 
 #config-panel summary {
   cursor: pointer;
-  padding: 6px 10px;
+  padding: 4px 8px;
   font-weight: bold;
   color: #bbb;
+  font-size: 0.75rem;
 }
 
 #config-panel .config-section {
-  padding: 8px 10px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 4px 16px;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 #config-panel .config-field {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 [data-tooltip] {
@@ -177,35 +205,46 @@ label {
   color: #ddd;
   padding: 4px 8px;
   border-radius: 3px;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   width: 200px;
   pointer-events: none;
   z-index: 1000;
 }
 
 #config-panel .config-field input {
-  width: 80px;
+  width: 58px;
   text-align: right;
+  flex-shrink: 0;
+}
+
+#config-panel .config-field label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Info panel */
 #info-panel {
-  width: 280px;
+  width: 240px;
   flex-shrink: 0;
-  font-size: 0.8rem;
-  line-height: 1.45;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .info-tabs {
   display: flex;
-  gap: 4px;
-  margin-bottom: 8px;
+  gap: 3px;
+  margin-bottom: 6px;
+  flex-shrink: 0;
 }
 
 .info-tabs button {
   flex: 1;
-  padding: 6px 8px;
-  font-size: 0.8rem;
+  padding: 4px 6px;
+  font-size: 0.7rem;
 }
 
 .info-tabs button.active {
@@ -216,19 +255,20 @@ label {
   background: #1e1e36;
   border: 1px solid #333;
   border-radius: 3px;
-  padding: 10px;
-  max-height: 80vh;
+  padding: 8px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 }
 
 .info-overview {
   color: #aaa;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .info-behavior {
-  margin-bottom: 12px;
-  padding-bottom: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
   border-bottom: 1px solid #2a2a44;
 }
 
@@ -239,39 +279,38 @@ label {
 }
 
 .info-behavior h4 {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #ddd;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .info-priority {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #3a3a5a;
   color: #aaa;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   flex-shrink: 0;
 }
 
 .info-behavior p {
   color: #999;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .info-fields {
   color: #6a8aaa;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
 }
 
 .info-fields-label {
   color: #556;
   font-weight: bold;
 }
-
