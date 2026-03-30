@@ -174,8 +174,43 @@ label {
   font-size: 0.75rem;
 }
 
+#config-panel .config-category-group {
+  border-top: 1px solid #2a2a44;
+  margin-top: 2px;
+}
+
+#config-panel .config-category-group:first-of-type {
+  border-top: none;
+  margin-top: 0;
+}
+
+#config-panel .config-category {
+  padding: 3px 6px;
+  font-size: 0.65rem;
+  font-weight: bold;
+  color: #668;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  list-style: none;
+}
+
+#config-panel .config-category::-webkit-details-marker {
+  display: none;
+}
+
+#config-panel .config-category::before {
+  content: '\25b6 ';
+  font-size: 0.5rem;
+  vertical-align: middle;
+}
+
+#config-panel .config-category-group[open] > .config-category::before {
+  content: '\25bc ';
+}
+
 #config-panel .config-section {
-  padding: 4px 6px;
+  padding: 2px 6px;
   display: flex;
   flex-direction: column;
   gap: 2px;

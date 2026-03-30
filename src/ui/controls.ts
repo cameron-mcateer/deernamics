@@ -133,9 +133,9 @@ export function createConfigPanel(
   const inputMap: InputEntry[] = [];
 
   const sectionDefs = [
-    { label: 'Grass', prefix: 'grass' },
     { label: 'Deer', prefix: 'deer' },
     { label: 'Wolf', prefix: 'wolf' },
+    { label: 'Grass', prefix: 'grass' },
   ] as const;
 
   function getSection(prefix: string): Record<string, number> {
@@ -143,55 +143,81 @@ export function createConfigPanel(
     return cfg[prefix as keyof typeof cfg] as unknown as Record<string, number>;
   }
 
-  const config = getConfig();
-  for (const sectionDef of sectionDefs) {
-    const details = document.createElement('details');
-    const sum = document.createElement('summary');
-    sum.textContent = sectionDef.label;
-    details.appendChild(sum);
+  function createField(prefix: string, key: string, val: number) {
+    const field = document.createElement('div');
+    field.className = 'config-field';
 
-    const grid = document.createElement('div');
-    grid.className = 'config-section';
+    const meta = FIELD_META[prefix]?.[key];
 
-    const initialObj = config[sectionDef.prefix as keyof typeof config] as unknown as Record<string, number>;
-    for (const [key, val] of Object.entries(initialObj)) {
-      if (typeof val !== 'number') continue;
-
-      const field = document.createElement('div');
-      field.className = 'config-field';
-
-      const meta = FIELD_META[sectionDef.prefix]?.[key];
-
-      const label = document.createElement('label');
-      label.textContent = meta?.label ?? key;
-      if (meta?.tooltip) {
-        label.setAttribute('data-tooltip', meta.tooltip);
-        bindTooltip(label);
-      }
-
-      const input = document.createElement('input');
-      input.type = 'number';
-      input.value = String(val);
-      input.step = val < 1 ? '0.01' : val < 10 ? '0.5' : '1';
-      const prefix = sectionDef.prefix;
-      const applyValue = () => {
-        const v = parseFloat(input.value);
-        if (!isNaN(v)) {
-          getSection(prefix)[key] = v;
-          onConfigChange(`${prefix}.${key}`, v);
-        }
-      };
-      input.addEventListener('change', applyValue);
-      input.addEventListener('input', applyValue);
-
-      allInputs.push(input);
-      inputMap.push({ input, prefix, key });
-      field.append(label, input);
-      grid.appendChild(field);
+    const label = document.createElement('label');
+    label.textContent = meta?.label ?? key;
+    if (meta?.tooltip) {
+      label.setAttribute('data-tooltip', meta.tooltip);
+      bindTooltip(label);
     }
 
-    details.appendChild(grid);
-    wrapper.appendChild(details);
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.value = String(val);
+    input.step = val < 1 ? '0.01' : val < 10 ? '0.5' : '1';
+    const applyValue = () => {
+      const v = parseFloat(input.value);
+      if (!isNaN(v)) {
+        getSection(prefix)[key] = v;
+        onConfigChange(`${prefix}.${key}`, v);
+      }
+    };
+    input.addEventListener('change', applyValue);
+    input.addEventListener('input', applyValue);
+
+    allInputs.push(input);
+    inputMap.push({ input, prefix, key });
+    field.append(label, input);
+    return field;
+  }
+
+  const config = getConfig();
+  for (const sectionDef of sectionDefs) {
+    const section = document.createElement('details');
+    section.open = true;
+    const sum = document.createElement('summary');
+    sum.textContent = sectionDef.label;
+    section.appendChild(sum);
+
+    const initialObj = config[sectionDef.prefix as keyof typeof config] as unknown as Record<string, number>;
+    const sectionMeta = FIELD_META[sectionDef.prefix] ?? {};
+
+    // Group fields by category
+    const groups = new Map<string, Array<[string, number]>>();
+    for (const [key, val] of Object.entries(initialObj)) {
+      if (typeof val !== 'number') continue;
+      const category = sectionMeta[key]?.category ?? '';
+      if (!groups.has(category)) groups.set(category, []);
+      groups.get(category)!.push([key, val]);
+    }
+
+    for (const [category, fields] of groups) {
+      const grid = document.createElement('div');
+      grid.className = 'config-section';
+      for (const [key, val] of fields) {
+        grid.appendChild(createField(sectionDef.prefix, key, val));
+      }
+
+      if (category) {
+        const catDetails = document.createElement('details');
+        catDetails.className = 'config-category-group';
+        const catSum = document.createElement('summary');
+        catSum.className = 'config-category';
+        catSum.textContent = category;
+        catDetails.appendChild(catSum);
+        catDetails.appendChild(grid);
+        section.appendChild(catDetails);
+      } else {
+        section.appendChild(grid);
+      }
+    }
+
+    wrapper.appendChild(section);
   }
 
   container.appendChild(wrapper);
