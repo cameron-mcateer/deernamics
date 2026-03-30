@@ -8,6 +8,7 @@ import { createControls, createConfigPanel } from './ui/controls';
 import { createPlacementToolbar, setupCanvasPlacement, type PlacementState } from './ui/placement';
 import { serializeMap, deserializeMap } from './serialization';
 import { createInfoPanel } from './ui/info-panel';
+import { loadScenario } from './scenarios';
 
 // State
 let config: SimConfig = createConfig();
@@ -118,7 +119,11 @@ setupCanvasPlacement(
 );
 
 // Info panel
-createInfoPanel(document.getElementById('info-panel')!);
+createInfoPanel(document.getElementById('info-panel')!, (scenario) => {
+  setRunning(false);
+  const result = loadScenario(scenario);
+  loadMap(result.config, result.world);
+});
 
 // Render
 let extinctionMessage: string | null = null;

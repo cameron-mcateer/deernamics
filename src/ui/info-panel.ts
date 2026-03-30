@@ -1,5 +1,6 @@
 import { getFieldLabel, getFieldTooltip } from './field-meta';
 import { bindTooltip } from './tooltip';
+import { SCENARIOS, type Scenario } from '../scenarios';
 
 type Behavior = {
   name: string;
@@ -105,7 +106,10 @@ const ACTORS: ActorInfo[] = [
   },
 ];
 
-export function createInfoPanel(container: HTMLElement) {
+export function createInfoPanel(
+  container: HTMLElement,
+  onLoadScenario: (scenario: Scenario) => void,
+) {
   const tabs = document.createElement('div');
   tabs.className = 'info-tabs';
 
@@ -138,11 +142,26 @@ export function createInfoPanel(container: HTMLElement) {
       <h4><span class="info-priority">3</span> Run the simulation</h4>
       <p>Click <b>Start</b> to begin. Use the speed buttons to run faster. Click <b>Stop</b> to pause, or <b>Reset</b> to restore the map to your placed layout. The population graph tracks deer, wolf, and grass levels over time.</p>
     </div>
-    <div class="info-behavior" style="border-bottom:none">
+    <div class="info-behavior">
       <h4><span class="info-priority">4</span> Save &amp; share</h4>
       <p>Click <b>Export</b> to download your map setup as a JSON file. Share it with others who can <b>Import</b> it to load your exact scenario — actor positions, grass layout, and all config values.</p>
     </div>
+    <div class="info-behavior" style="border-bottom:none">
+      <h4>Example Scenarios</h4>
+      <p>Load a pre-built scenario to see different ecosystem dynamics in action.</p>
+      <div class="scenario-buttons"></div>
+    </div>
   `;
+  // Add scenario buttons
+  const scenarioContainer = guidePanel.querySelector('.scenario-buttons')!;
+  for (const scenario of SCENARIOS) {
+    const btn = document.createElement('button');
+    btn.className = 'scenario-btn';
+    btn.innerHTML = `<strong>${scenario.name}</strong><span>${scenario.description}</span>`;
+    btn.addEventListener('click', () => onLoadScenario(scenario));
+    scenarioContainer.appendChild(btn);
+  }
+
   panels.push(guidePanel);
   content.appendChild(guidePanel);
 
