@@ -107,7 +107,6 @@ export function createControls(container: HTMLElement, callbacks: ControlCallbac
     setRunning(isRunning: boolean) {
       seedInput.disabled = isRunning;
       randomSeedBtn.disabled = isRunning;
-      for (const btn of speedBtns) btn.disabled = isRunning;
       exportBtn.disabled = isRunning;
       importBtn.disabled = isRunning;
     },
